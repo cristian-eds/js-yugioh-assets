@@ -15,7 +15,7 @@ const state = {
     },
     playerSides: {
         player1: "player-cards",
-        player1Box:  document.querySelector("#player-cards"),
+        player1Box: document.querySelector("#player-cards"),
         computer: "computer-cards",
         computerBox: document.querySelector("#computer-cards")
     },
@@ -59,24 +59,24 @@ async function getRandomCardId() {
 }
 
 async function checkDuelResults(playerCardId, computerCardId) {
-    let duelResults = "Empate";
+    let duelResults = "Draw";
     let playerCard = cardData[playerCardId];
-    
-    if(playerCard.WinOf.includes(computerCardId)) {
-        duelResults = "Ganhou"
+
+    if (playerCard.WinOf.includes(computerCardId)) {
+        duelResults = "Win"
         state.score.playerScore++;
     }
 
-    if(playerCard.LoseOf.includes(computerCardId)) {
-        duelResults = "Perdeu";
+    if (playerCard.LoseOf.includes(computerCardId)) {
+        duelResults = "Lose";
         state.score.computerScore++;
     }
-
+    playAudio(duelResults);
     return duelResults;
 }
 
 async function removeAllCards() {
-    let {computerBox, player1Box} = state.playerSides;
+    let { computerBox, player1Box } = state.playerSides;
     let imgElements = computerBox.querySelectorAll("img");
     imgElements.forEach((img) => img.remove());
 
@@ -85,7 +85,7 @@ async function removeAllCards() {
 }
 
 async function drawButton(text) {
-    state.actions.button.innerText = text;
+    state.actions.button.innerText = text.toUpperCase();
     state.actions.button.style.display = 'block';
 }
 
@@ -147,6 +147,27 @@ async function drawCards(cardNumbers, fieldSide) {
     }
 }
 
+async function resetDuel() {
+    state.cardSprites.avatar.src = "";
+    state.actions.button.style.display = 'none';
+
+    state.fieldCards.player.style.display = 'none';
+    state.fieldCards.computer.style.display = 'none';
+
+    init();
+}
+
+async function playAudio(status) {
+
+    try {
+        const audio = new Audio(`./src/assets/audios/${status}.wav`);
+        audio.play();
+    } catch (error) {
+        console.error(erro);
+    }
+
+
+}
 
 function init() {
     drawCards(5, state.playerSides.player1);
