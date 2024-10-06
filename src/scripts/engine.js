@@ -99,17 +99,35 @@ async function setCardsFields(cardId) {
 
     let computerCardId = await getRandomCardId();
 
-    state.fieldCards.player.style.display = "block";
-    state.fieldCards.computer.style.display = "block";
-
-    state.fieldCards.player.src = cardData[cardId].img;
-    state.fieldCards.computer.src = cardData[computerCardId].img;
+    await hiddenCardDetails();
+    await showHiddenCardFieldsImages(true);
+    await drawCardsInField(cardId,computerCardId);
 
     let duelResult = await checkDuelResults(cardId, computerCardId);
 
     await updateScore();
     await drawButton(duelResult);
+}
 
+async function drawCardsInField(cardId,computerCardId) {
+    state.fieldCards.player.src = cardData[cardId].img;
+    state.fieldCards.computer.src = cardData[computerCardId].img;
+}
+
+async function showHiddenCardFieldsImages(value) {
+    if (value) {
+        state.fieldCards.player.style.display = "block";
+        state.fieldCards.computer.style.display = "block";
+    } else {
+        state.fieldCards.computer.style.display = 'none';
+        state.fieldCards.player.style.display = 'none';
+    }
+}
+
+async function hiddenCardDetails() {
+    state.cardSprites.avatar.innerText = "";
+    state.cardSprites.name.innerText = "";
+    state.cardSprites.type.innerText = "";
 }
 
 async function drawSelectCard(id) {
@@ -163,13 +181,15 @@ async function playAudio(status) {
         const audio = new Audio(`./src/assets/audios/${status}.wav`);
         audio.play();
     } catch (error) {
-        console.error(erro);
+        console.error(error);
     }
 
 
 }
 
 function init() {
+    showHiddenCardFieldsImages(false);
+
     drawCards(5, state.playerSides.player1);
     drawCards(5, state.playerSides.computer);
 }
