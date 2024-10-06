@@ -58,6 +58,23 @@ async function getRandomCardId() {
     return cardData[randomIndex].id;
 }
 
+async function checkDuelResults(playerCardId, computerCardId) {
+    let duelResults = "Empate";
+    let playerCard = cardData[playerCardId];
+    
+    if(playerCard.WinOf.includes(computerCardId)) {
+        duelResults = "Ganhou"
+        state.score.playerScore++;
+    }
+
+    if(playerCard.LoseOf.includes(computerCardId)) {
+        duelResults = "Perdeu";
+        state.score.computerScore++;
+    }
+
+    return duelResults;
+}
+
 async function removeAllCards() {
     let {computerBox, player1Box} = state.playerSides;
     let imgElements = computerBox.querySelectorAll("img");
@@ -66,6 +83,16 @@ async function removeAllCards() {
     imgElements = player1Box.querySelectorAll("img");
     imgElements.forEach((img) => img.remove());
 }
+
+async function drawButton(text) {
+    state.actions.button.innerText = text;
+    state.actions.button.style.display = 'block';
+}
+
+async function updateScore() {
+    state.score.scoreBox.innerText = `Win: ${state.score.playerScore} | Lose:${state.score.computerScore}`
+}
+
 
 async function setCardsFields(cardId) {
     await removeAllCards();
@@ -80,8 +107,8 @@ async function setCardsFields(cardId) {
 
     let duelResult = await checkDuelResults(cardId, computerCardId);
 
-    //await updateScore();
-    //await drawButton();
+    await updateScore();
+    await drawButton(duelResult);
 
 }
 
@@ -92,7 +119,6 @@ async function drawSelectCard(id) {
 }
 
 async function createCardImage(idCard, fieldSide) {
-    console.log(idCard);
     const cardImage = document.createElement("img");
     cardImage.setAttribute("height", "100px");
     cardImage.setAttribute("src", "./src/assets/icons/card-back.png");
@@ -108,9 +134,6 @@ async function createCardImage(idCard, fieldSide) {
             setCardsFields(idCard);
         });
     }
-
-
-
     return cardImage;
 }
 
